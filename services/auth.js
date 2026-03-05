@@ -116,7 +116,10 @@ async function start() {
     });
 
     // 3. 서버 시작
-    server.listen(config.AUTH_PORT, () => {
+    // server.listen(config.AUTH_PORT, () => {
+    //     console.log(`🚀 Auth Server running on port ${config.AUTH_PORT}`);
+    // });
+    server.listen(config.AUTH_PORT, '0.0.0.0', () => {
         console.log(`🚀 Auth Server running on port ${config.AUTH_PORT}`);
     });
 }
