@@ -86,9 +86,19 @@ async function start() {
         }
     });
 
-    // ==========================================================
-    // 에러 핸들러 등록 (반드시 모든 라우트 정의가 끝난 뒤에 위치해야 함)
-    // ==========================================================
+    // 4. 활성화된(승인된) 유저 목록 조회 API (로비용)
+    app.get('/api/users', async (req, res) => {
+        try {
+            // 보안을 위해 password 필드는 제외(0)하고, isApproved가 true인 유저만 가져옵니다.
+            const users = await db.collection('users')
+                .find({ isApproved: true })
+                .project({ password: 0 })
+                .toArray();
+            res.json({ success: true, users });
+        } catch (err) {
+            res.status(500).json({ success: false, message: 'Internal Server Error' });
+        }
+    });
 
     // 처리되지 않은 모든 라우트는 404 에러로 넘김
     app.use(function(req, res, next) {
