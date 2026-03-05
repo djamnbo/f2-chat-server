@@ -3,12 +3,12 @@
   "version": "0.0.1",
   "description": "Large-scale Chat Backend with AI Bot Integration",
   "private": true,
-  "main": "src/connection-server.js",
+  "main": "bin/www.js",
   "scripts": {
-    "start:auth": "cross-env NODE_ENV=local node src/auth-server.js",
-    "start:conn": "cross-env NODE_ENV=local node src/connection-server.js",
-    "start:worker": "cross-env NODE_ENV=local node src/chat-worker.js",
-    "start:ai": "cross-env NODE_ENV=local node src/ai-worker.js",
+    "start:auth": "cross-env NODE_ENV=local node services/auth.js",
+    "start:conn": "cross-env NODE_ENV=local node services/connection.js",
+    "start:worker": "cross-env NODE_ENV=local node services/worker.js",
+    "start:ai": "cross-env NODE_ENV=local node services/ai.js",
     "start:all": "npm run start:auth & npm run start:conn & npm run start:worker & npm run start:ai"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "express": "^5.2.1",
     "http-errors": "~1.6.3",
     "ioredis": "^5.10.0",
+    "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.1.0",
     "morgan": "~1.9.1",
     "pug": "^3.0.3",
