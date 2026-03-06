@@ -12,8 +12,15 @@ const server = http.createServer((req, res) => {
 
 const io = new Server(server, { cors: { origin: "*" } });
 
-const redis = new Redis({ host: config.REDIS_HOST, port: config.REDIS_PORT });
-const sub = new Redis({ host: config.REDIS_HOST, port: config.REDIS_PORT });
+const redis = new Redis({
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT,
+    password: config.REDIS_PASSWORD
+});
+const sub = new Redis({
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT
+});
 
 async function start() {
     console.log(`⏳ Starting Connection Server [${config.SERVER_ID}]...`);

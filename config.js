@@ -12,6 +12,7 @@ module.exports = {
     MONGODB_URI: process.env.MONGODB_URI,
     REDIS_HOST: process.env.REDIS_HOST,
     REDIS_PORT: process.env.REDIS_PORT || 6379,
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD || undefined,
     RABBITMQ_URL: process.env.RABBITMQ_URL,
     SERVER_ID: process.env.SERVER_ID || 'conn-1',
     AI_BOT_ID: process.env.AI_BOT_ID || 'AI_ASSISTANT',

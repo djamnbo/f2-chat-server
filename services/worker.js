@@ -4,8 +4,15 @@ const { MongoClient } = require('mongodb');
 const config = require('../config');
 
 // 라우팅 명령을 내리기 위한 Redis Pub 연결
-const redis = new Redis({ host: config.REDIS_HOST, port: config.REDIS_PORT });
-const pub = new Redis({ host: config.REDIS_HOST, port: config.REDIS_PORT });
+const redis = new Redis({
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT,
+    password: config.REDIS_PASSWORD
+});
+const pub = new Redis({
+    host: config.REDIS_HOST,
+    port: config.REDIS_PORT
+});
 
 async function start() {
     console.log(`⏳ Starting Chat Worker...`);
