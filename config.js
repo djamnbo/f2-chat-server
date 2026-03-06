@@ -16,5 +16,6 @@ module.exports = {
     RABBITMQ_URL: process.env.RABBITMQ_URL,
     SERVER_ID: process.env.SERVER_ID || 'conn-1',
     AI_BOT_ID: process.env.AI_BOT_ID || 'AI_ASSISTANT',
-    JWT_SECRET: process.env.JWT_SECRET || 'ficfack_secret_key'
+    JWT_SECRET: process.env.JWT_SECRET || 'ficfack_secret_key',
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY
 };
