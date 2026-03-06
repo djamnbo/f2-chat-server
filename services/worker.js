@@ -11,7 +11,8 @@ const redis = new Redis({
 });
 const pub = new Redis({
     host: config.REDIS_HOST,
-    port: config.REDIS_PORT
+    port: config.REDIS_PORT,
+    password: config.REDIS_PASSWORD
 });
 
 async function start() {
