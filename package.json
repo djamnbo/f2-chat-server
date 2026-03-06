@@ -12,6 +12,7 @@
     "start:all": "npm run start:auth & npm run start:conn & npm run start:worker & npm run start:ai"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "amqplib": "^0.10.9",
     "cookie-parser": "~1.4.4",
     "cross-env": "^10.1.0",
