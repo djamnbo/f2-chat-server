@@ -58,7 +58,7 @@ async function start() {
 
             // 페르소나 주입 (첫 대화거나 히스토리가 적을 때 프롬프트 강화)
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash", // 빠르고 무료 티어에 적합한 모델
+                model: "gemini-1.5-flash-latest", // 빠르고 무료 티어에 적합한 모델
                 systemInstruction: SYSTEM_PROMPT // Gemini 1.5 이상에서 지원하는 시스템 프롬프트
             });
 
