@@ -9,7 +9,10 @@
     "start:conn": "cross-env NODE_ENV=local node services/connection.js",
     "start:worker": "cross-env NODE_ENV=local node services/worker.js",
     "start:ai": "cross-env NODE_ENV=local node services/ai.js",
-    "start:all": "npm run start:auth & npm run start:conn & npm run start:worker & npm run start:ai"
+    "tunnel": "ssh -p 2222 -o StrictHostKeyChecking=no -N -L 27017:127.0.0.1:27017 -L 6379:127.0.0.1:6379 -L 5672:127.0.0.1:5672 f2@app.ficfack.in",
+    "servers": "npm run start:auth & npm run start:conn & npm run start:worker & npm run start:ai",
+    "delay": "node -e \"console.log('⏳ SSH 터널링 연결 대기 중 (3초)...'); setTimeout(()=>{}, 3000)\"",
+    "start:all": "npm run tunnel & npm run delay && npm run servers"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

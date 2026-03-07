@@ -38,28 +38,43 @@ async function start() {
         console.log(`🤖 [AI 수신] 질문 받음 (From: ${requestData.from}):`, requestData.text);
 
         try {
-            // 4. 최근 대화 내역(Context) 조회 (해당 유저와 AI 봇 간의 대화)
+            // 4. 최근 대화 내역(Context) 조회 (현재 메시지 이전의 대화만 가져오기)
             const rawHistory = await db.collection('messages')
                 .find({
                     $or: [
                         { from: requestData.from, to: config.AI_BOT_ID },
                         { from: config.AI_BOT_ID, to: requestData.from }
-                    ]
+                    ],
+                    timestamp: { $lt: requestData.timestamp } // ✨ 핵심 수정: 현재 처리 중인 메시지 제외
                 })
                 .sort({ timestamp: -1 })
-                .limit(10) // 최근 10개 메시지만 기억
+                .limit(10)
                 .toArray();
 
-            // Gemini History 형식에 맞게 변환 (과거순 정렬을 위해 reverse)
-            const chatHistory = rawHistory.reverse().map(chat => ({
-                role: chat.from === config.AI_BOT_ID ? 'model' : 'user',
-                parts: [{ text: chat.text }]
-            }));
+            // ✨ 핵심 수정: Gemini API의 엄격한 교차(Alternating) 규칙을 준수하도록 필터링
+            let chatHistory = [];
+            let expectedRole = 'user'; // 무조건 user부터 시작해야 함
+
+            for (const chat of rawHistory.reverse()) {
+                const role = chat.from === config.AI_BOT_ID ? 'model' : 'user';
+
+                // 규칙에 맞는 경우에만 히스토리에 추가 (연속된 user나 연속된 model 방지)
+                if (role === expectedRole) {
+                    chatHistory.push({ role: role, parts: [{ text: chat.text }] });
+                    expectedRole = (expectedRole === 'user') ? 'model' : 'user';
+                }
+            }
+
+            // history의 마지막이 'user'로 끝났다면 짝이 맞지 않으므로 제거
+            // (바로 다음 sendMessage()에서 새로운 user 메시지가 추가될 예정이기 때문)
+            if (chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === 'user') {
+                chatHistory.pop();
+            }
 
             // 페르소나 주입 (첫 대화거나 히스토리가 적을 때 프롬프트 강화)
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash-latest", // 빠르고 무료 티어에 적합한 모델
-                systemInstruction: SYSTEM_PROMPT // Gemini 1.5 이상에서 지원하는 시스템 프롬프트
+                model: "gemini-2.5-flash",
+                systemInstruction: SYSTEM_PROMPT
             });
 
             const chatSession = model.startChat({
