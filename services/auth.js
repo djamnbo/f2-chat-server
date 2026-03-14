@@ -122,6 +122,35 @@ async function start() {
     server.listen(config.AUTH_PORT, '0.0.0.0', () => {
         console.log(`🚀 Auth Server running on port ${config.AUTH_PORT}`);
     });
+
+    // ==========================================
+    // 🛑 Graceful Shutdown 처리
+    // ==========================================
+    const gracefulShutdown = async (signal) => {
+        console.log(`\n🛑 [Auth Server] ${signal} 신호 수신: 연결을 안전하게 종료합니다...`);
+        try {
+            // 1. Express 서버(HTTP) 신규 요청 차단
+            server.close(() => {
+                console.log('✅ HTTP 서버가 종료되었습니다.');
+            });
+            // 2. MongoDB 커넥션 종료
+            if (client) {
+                await client.close();
+                console.log('✅ MongoDB 커넥션이 안전하게 종료되었습니다.');
+            }
+        } catch (err) {
+            console.error('❌ 종료 중 에러 발생:', err);
+        } finally {
+            process.exit(0);
+        }
+    };
+
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));   // Ctrl+C
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); // PM2 종료
+    process.once('SIGUSR2', async () => {                     // Nodemon 재시작
+        await gracefulShutdown('SIGUSR2');
+        process.kill(process.pid, 'SIGUSR2');
+    });
 }
 
 start().catch(console.error);

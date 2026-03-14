@@ -90,6 +90,36 @@ async function start() {
     server.listen(config.PORT, () => {
         console.log(`🚀 Connection Server [${config.SERVER_ID}] running on port ${config.PORT}`);
     });
+
+    // ==========================================
+    // 🛑 Graceful Shutdown 처리
+    // ==========================================
+    const gracefulShutdown = async (signal) => {
+        console.log(`\n🛑 [Chat Worker] ${signal} 신호 수신: 연결을 안전하게 종료합니다...`);
+        try {
+            // mqConn, dbClient, redis, pub 등 위에서 생성한 변수들이 접근 가능한 스코프여야 합니다.
+            // (start 함수 바깥으로 선언을 빼거나, 전역 변수로 관리하는 것이 좋습니다.)
+
+            // 예시:
+            if (mqConn) await mqConn.close();
+            // if (dbClient) await dbClient.close();
+            if (redis) redis.disconnect();
+            // if (pub) pub.disconnect();
+
+            console.log('✅ 모든 커넥션(MQ, DB, Redis)이 종료되었습니다.');
+        } catch (err) {
+            console.error('❌ 종료 중 에러 발생:', err);
+        } finally {
+            process.exit(0);
+        }
+    };
+
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.once('SIGUSR2', async () => {
+        await gracefulShutdown('SIGUSR2');
+        process.kill(process.pid, 'SIGUSR2');
+    });
 }
 
 start().catch(console.error);
