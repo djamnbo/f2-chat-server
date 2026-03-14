@@ -72,8 +72,13 @@ async function start() {
             }
 
             const message = {
+                userId: userId,       // fastAPI 요청 규격
                 ...parsedPayload,
                 from: userId,
+                to: parsedPayload.to, // 수신자 (AI_ASSISTANT 로 들어오는 경우 agent 가 수신)
+                text: parsedPayload.text,
+                consultation_style: parsedPayload.consultation_style || '따뜻하고 자상한 심리 상담가',
+                roomId: parsedPayload.roomId,
                 timestamp: Date.now()
             };
 
